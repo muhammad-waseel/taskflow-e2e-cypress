@@ -1,0 +1,18 @@
+{
+  "newTasks": [
+    { "title": "Prepare sprint demo", "description": "Walk through the new booking flow", "priority": "high", "dueOffset": 3 },
+    { "title": "Review pull requests", "description": "Two PRs waiting for review", "priority": "medium", "dueOffset": 1 },
+    { "title": "Update project README", "description": "", "priority": "low", "dueOffset": null }
+  ],
+  "filterSet": [
+    { "title": "Pay electricity bill", "priority": "medium", "dueOffset": -2, "completed": false },
+    { "title": "Prepare client demo", "priority": "high", "dueOffset": 7, "completed": false },
+    { "title": "Read React docs", "priority": "low", "dueOffset": null, "completed": true },
+    { "title": "Send weekly report", "priority": "high", "dueOffset": 0, "completed": false }
+  ],
+  "invalidSignups": [
+    { "case": "missing name", "name": "", "email": "valid@example.com", "password": "Secret123!", "message": "Name is required" },
+    { "case": "invalid email", "name": "Ali", "email": "not-an-email", "password": "Secret123!", "message": "A valid email is required" },
+    { "case": "short password", "name": "Ali", "email": "short@example.com", "password": "123", "message": "Password must be at least 6 characters" }
+  ]
+}

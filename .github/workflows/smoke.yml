@@ -1,0 +1,25 @@
+name: Production smoke test
+
+# Read-only checks against the live TaskFlow app: no accounts or data are created.
+on:
+  schedule:
+    - cron: '17 6 * * *' # every day
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_BASE_URL: https://taskflow-waseel-eac0.onrender.com
+      MONGOMS_DISABLE_POSTINSTALL: 1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Wake the free Render instance
+        run: curl --silent --show-error --retry 10 --retry-delay 10 --retry-all-errors --max-time 90 "$CYPRESS_BASE_URL/api/health"
+      - name: Run smoke test
+        run: npm run test:smoke

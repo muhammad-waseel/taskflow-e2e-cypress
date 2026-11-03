@@ -1,0 +1,71 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Cypress (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
+    env:
+      MONGOMS_VERSION: 8.0.4
+    steps:
+      - name: Check out the test framework
+        uses: actions/checkout@v5
+
+      - name: Check out the TaskFlow app under test
+        uses: actions/checkout@v5
+        with:
+          repository: muhammad-waseel/taskflow
+          path: app
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install test dependencies (Cypress + in-memory MongoDB)
+        run: npm ci
+
+      - name: Install and build TaskFlow
+        run: |
+          npm ci --prefix app/server --omit=dev
+          npm ci --prefix app/client
+          npm run build --prefix app/client
+
+      - name: Start MongoDB
+        run: |
+          node scripts/start-mongo.js > mongo.log 2>&1 &
+          npx wait-on --timeout 120000 tcp:127.0.0.1:27017
+
+      - name: Start TaskFlow
+        run: |
+          node app/server/server.js > app.log 2>&1 &
+          npx wait-on --timeout 60000 http://localhost:5000/api/health
+        env:
+          MONGO_URI: mongodb://127.0.0.1:27017/taskflow_e2e
+          JWT_SECRET: e2e-secret
+          AUTH_RATE_LIMIT: 1000
+          PORT: 5000
+
+      - name: Run Cypress in ${{ matrix.browser }}
+        run: npx cypress run --browser ${{ matrix.browser }}
+
+      - name: Upload screenshots of failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.browser }}
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - name: Show server logs on failure
+        if: failure()
+        run: tail -n 100 app.log mongo.log || true

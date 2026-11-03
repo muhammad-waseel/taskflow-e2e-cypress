@@ -1,0 +1,21 @@
+{
+  "name": "taskflow-e2e-cypress",
+  "version": "1.0.0",
+  "description": "Cypress end-to-end test framework for the TaskFlow app (Page Object Model, data-driven tests, Chrome + Firefox in CI)",
+  "scripts": {
+    "cy:open": "cypress open",
+    "test": "cypress run",
+    "test:chrome": "cypress run --browser chrome",
+    "test:firefox": "cypress run --browser firefox",
+    "test:smoke": "cypress run --spec cypress/e2e/smoke.cy.js",
+    "db:start": "node scripts/start-mongo.js"
+  },
+  "author": "Muhammad Waseel",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^15.21.1",
+    "mongodb-memory-server": "^11.3.0",
+    "wait-on": "^9.5.1"
+  },
+  "private": true
+}
