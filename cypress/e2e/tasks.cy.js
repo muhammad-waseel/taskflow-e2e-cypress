@@ -27,7 +27,9 @@ describe('Managing tasks', () => {
     [0, 1, 2].forEach((i) => {
       it(`adds task #${i + 1} with its details`, function () {
         const t = this.tasks[i];
-        const add = (due) => dashboard.addTask({ title: t.title, description: t.description, priority: t.priority, due });
+        const add = (due) => {
+          dashboard.addTask({ title: t.title, description: t.description, priority: t.priority, due });
+        };
         if (t.dueOffset === null) add();
         else cy.isoDate(t.dueOffset).then(add);
 
@@ -87,14 +89,18 @@ describe('Managing tasks', () => {
   });
 
   it('flags overdue tasks and counts them', () => {
-    cy.isoDate(-2).then((due) => dashboard.addTask({ title: 'Submit expense claim', due }));
+    cy.isoDate(-2).then((due) => {
+      dashboard.addTask({ title: 'Submit expense claim', due });
+    });
     dashboard.task('Submit expense claim').should('have.class', 'is-overdue');
     dashboard.task('Submit expense claim').find('[data-cy="task-item-due"]').should('contain', 'Overdue');
     dashboard.stat('overdue').should('have.text', '1');
   });
 
   it('labels a task due today', () => {
-    cy.isoDate(0).then((due) => dashboard.addTask({ title: 'Stand-up notes', due }));
+    cy.isoDate(0).then((due) => {
+      dashboard.addTask({ title: 'Stand-up notes', due });
+    });
     dashboard.task('Stand-up notes').find('[data-cy="task-item-due"]').should('have.text', 'Due today');
     dashboard.stat('overdue').should('have.text', '0');
   });
